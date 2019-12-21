@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29613.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Calibration", "Calibration\Calibration.csproj", "{213AA3F3-DBF1-4AEF-84DF-A543E3B638B5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{213AA3F3-DBF1-4AEF-84DF-A543E3B638B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{213AA3F3-DBF1-4AEF-84DF-A543E3B638B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{213AA3F3-DBF1-4AEF-84DF-A543E3B638B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{213AA3F3-DBF1-4AEF-84DF-A543E3B638B5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7858AD84-E705-40DD-84B1-67D6F9CF8448}
+	EndGlobalSection
+EndGlobal

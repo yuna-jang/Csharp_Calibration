@@ -1,0 +1,11 @@
+D:\GitHub\C#_Calibration\Calibration\Calibration\bin\Debug\netcoreapp3.1\Calibration.exe
+D:\GitHub\C#_Calibration\Calibration\Calibration\bin\Debug\netcoreapp3.1\Calibration.deps.json
+D:\GitHub\C#_Calibration\Calibration\Calibration\bin\Debug\netcoreapp3.1\Calibration.runtimeconfig.json
+D:\GitHub\C#_Calibration\Calibration\Calibration\bin\Debug\netcoreapp3.1\Calibration.runtimeconfig.dev.json
+D:\GitHub\C#_Calibration\Calibration\Calibration\bin\Debug\netcoreapp3.1\Calibration.dll
+D:\GitHub\C#_Calibration\Calibration\Calibration\bin\Debug\netcoreapp3.1\Calibration.pdb
+D:\GitHub\C#_Calibration\Calibration\Calibration\obj\Debug\netcoreapp3.1\Calibration.csprojAssemblyReference.cache
+D:\GitHub\C#_Calibration\Calibration\Calibration\obj\Debug\netcoreapp3.1\Calibration.AssemblyInfoInputs.cache
+D:\GitHub\C#_Calibration\Calibration\Calibration\obj\Debug\netcoreapp3.1\Calibration.AssemblyInfo.cs
+D:\GitHub\C#_Calibration\Calibration\Calibration\obj\Debug\netcoreapp3.1\Calibration.dll
+D:\GitHub\C#_Calibration\Calibration\Calibration\obj\Debug\netcoreapp3.1\Calibration.pdb
