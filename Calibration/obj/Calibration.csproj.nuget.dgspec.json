@@ -1,23 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "D:\\GitHub\\C#_Calibration\\Calibration\\Calibration\\Calibration.csproj": {}
+    "C:\\Users\\YUNA\\Y_stryx\\Csharp_Calibration\\Calibration\\Calibration.csproj": {}
   },
   "projects": {
-    "D:\\GitHub\\C#_Calibration\\Calibration\\Calibration\\Calibration.csproj": {
+    "C:\\Users\\YUNA\\Y_stryx\\Csharp_Calibration\\Calibration\\Calibration.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\GitHub\\C#_Calibration\\Calibration\\Calibration\\Calibration.csproj",
+        "projectUniqueName": "C:\\Users\\YUNA\\Y_stryx\\Csharp_Calibration\\Calibration\\Calibration.csproj",
         "projectName": "Calibration",
-        "projectPath": "D:\\GitHub\\C#_Calibration\\Calibration\\Calibration\\Calibration.csproj",
-        "packagesPath": "C:\\Users\\stryx\\.nuget\\packages\\",
-        "outputPath": "D:\\GitHub\\C#_Calibration\\Calibration\\Calibration\\obj\\",
+        "projectPath": "C:\\Users\\YUNA\\Y_stryx\\Csharp_Calibration\\Calibration\\Calibration.csproj",
+        "packagesPath": "C:\\Users\\YUNA\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\YUNA\\Y_stryx\\Csharp_Calibration\\Calibration\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
         "configFilePaths": [
-          "C:\\Users\\stryx\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\YUNA\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [

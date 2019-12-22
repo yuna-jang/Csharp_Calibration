@@ -187,10 +187,26 @@ namespace Calibration
         public double[] sTranslation()
         {
             double[] sT = new double[] {EOP_header.T0, EOP_header.T1, EOP_header.T2};
-            double 
+            double ;
         }
 
-        public double[] 
+        public double[] Mat3d(double w, double p, double k)
+        {
+            double[,] Mw = { { 1, 0, 0 }, { 0, Math.Cos(w), Math.Sin(w)}, { 0, -Math.Sin(w), Math.Cos(w) } };
+            double[,] Mp = { { Math.Cos(p), 0, -Math.Sin(p)}, { 0,1,0}, {Math.Sin(p), 0, Math.Cos(p) } };
+            double[,] Mk = { { Math.Cos(k), Math.Sin(k), 0},{ -Math.Sin(k), Math.Cos(k), 0},{ 0, 0, 1 } };
+
+            double[,] Mwpk = new double[,] { };
+
+            for(int i = 0; i < 3; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    Mwpk[i, k] = Mk[i, k] * Mp[k, i];
+                    
+                }
+            }
+        }
     }
 
     public class class_INS_calculation
