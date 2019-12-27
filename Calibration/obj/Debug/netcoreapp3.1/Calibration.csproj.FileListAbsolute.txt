@@ -9,3 +9,14 @@ D:\GitHub\C#_Calibration\Calibration\Calibration\obj\Debug\netcoreapp3.1\Calibra
 D:\GitHub\C#_Calibration\Calibration\Calibration\obj\Debug\netcoreapp3.1\Calibration.AssemblyInfo.cs
 D:\GitHub\C#_Calibration\Calibration\Calibration\obj\Debug\netcoreapp3.1\Calibration.dll
 D:\GitHub\C#_Calibration\Calibration\Calibration\obj\Debug\netcoreapp3.1\Calibration.pdb
+D:\GitHub\Csharp_Calibration\Calibration\Calibration\bin\Debug\netcoreapp3.1\Calibration.exe
+D:\GitHub\Csharp_Calibration\Calibration\Calibration\bin\Debug\netcoreapp3.1\Calibration.deps.json
+D:\GitHub\Csharp_Calibration\Calibration\Calibration\bin\Debug\netcoreapp3.1\Calibration.runtimeconfig.json
+D:\GitHub\Csharp_Calibration\Calibration\Calibration\bin\Debug\netcoreapp3.1\Calibration.runtimeconfig.dev.json
+D:\GitHub\Csharp_Calibration\Calibration\Calibration\bin\Debug\netcoreapp3.1\Calibration.dll
+D:\GitHub\Csharp_Calibration\Calibration\Calibration\bin\Debug\netcoreapp3.1\Calibration.pdb
+D:\GitHub\Csharp_Calibration\Calibration\Calibration\obj\Debug\netcoreapp3.1\Calibration.csprojAssemblyReference.cache
+D:\GitHub\Csharp_Calibration\Calibration\Calibration\obj\Debug\netcoreapp3.1\Calibration.AssemblyInfoInputs.cache
+D:\GitHub\Csharp_Calibration\Calibration\Calibration\obj\Debug\netcoreapp3.1\Calibration.AssemblyInfo.cs
+D:\GitHub\Csharp_Calibration\Calibration\Calibration\obj\Debug\netcoreapp3.1\Calibration.dll
+D:\GitHub\Csharp_Calibration\Calibration\Calibration\obj\Debug\netcoreapp3.1\Calibration.pdb

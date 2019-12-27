@@ -54,109 +54,105 @@ namespace Calibration
 
     class Program
     {
+        public static struct_IOP_header IOP_header;
+        public static struct_EOP_header EOP_header;
+        public static struct_rph rph;
+        public static string mfolder_base = @"D:\stryx_JYA_hdMap_dev\smms_fisheye\mBody_cam_2.bin";
+
+        public static string path_depthMap_gpoint;
         public static double[] sPoint = new double[3];
         public static double[] INS_xyz = new double[3];
         public static double[] INS_rph = new double[3];
         public static double[,] INS_mat = new double[3, 3];
         public static double[] mXYZ = new double[3];
 
-
-        static void Main(string[] args)
+        public xyz2pix()
         {
-            class_sample_calibration CB = new class_sample_calibration(@"D:\stryx_JYA_hdMap_dev\smms_fisheye\00010\depth_00010_0_gPoint.bin");
-            CB.OpenBinaryReader();
-            sPoint = CB.Setxyz(189564.1200073242, 546414.7099945068, 42.070000228881840);  // object의 위치
-            (INS_xyz, INS_rph) = CB.SetFromINS(189540.148202, 546441.107965, 33.144314, 0.003972, 0.015181, -3.116845); // platform body의 위치 
+            Console.WriteLine("Starting Calibation ...");
+        }
+
+        public double[] do_xyz2pix(double X, double Y, double Z, double x_tm, double y_tm, double height, double roll, double pitch, double heading, int icam)
+        {
+            class_sample_calibration CB = new class_sample_calibration();
+            (IOP_header, EOP_header) = CB.OpenBinaryReader(IOP_header, EOP_header, mfolder_base, icam);
+            sPoint = CB.Setxyz(X, Y, Z);  // object의 위치
+            (INS_xyz, INS_rph) = CB.SetFromINS(x_tm, y_tm, height, roll, pitch, heading); // platform body의 위치 
 
             class_INS_calculation rotm = new class_INS_calculation();
             INS_mat = rotm.rotM_novatel(INS_rph);
             mXYZ = rotm.INS_Rmat(sPoint, INS_xyz, INS_mat);
-            Console.WriteLine($"INS_mat :\n{INS_mat[0, 0]} {INS_mat[0, 1]} {INS_mat[0, 2]} \n");
-            Console.WriteLine($"{INS_mat[1, 0]} {INS_mat[1, 1]} {INS_mat[1, 2]} \n");
-            Console.WriteLine($"{INS_mat[2, 0]} {INS_mat[2, 1]} {INS_mat[2, 2]} \n");
-            Console.WriteLine($"sPoint : {sPoint[0]} {sPoint[1]} {sPoint[2]}");
-            Console.WriteLine($"INS_xyz : {INS_xyz[0]} {INS_xyz[1]} {INS_xyz[2]}");
-            Console.WriteLine($"mxyz : {mXYZ[0]} {mXYZ[1]} {mXYZ[2]}");
 
-            Console.ReadLine();
+            double[,] sXYZcam = new double[3, 1];
+            sXYZcam = rotm.pixel_obj2cam(mXYZ, EOP_header, 1);
+
+            double[,] sXYimg = rotm.pixel_cam2img_equidist(sXYZcam, IOP_header, 1);
+            double[] XY_Pix;
+            if (sXYimg != null)
+                XY_Pix = new double[] { sXYimg[0, 0], sXYimg[1, 0] };
+            else
+                XY_Pix = new double[] { 0, 0 };
+            return XY_Pix;
         }
     }
 
     public class class_sample_calibration
     {
-        public struct_IOP_header IOP_header;
-        public struct_EOP_header EOP_header;
-        public struct_rph rph;
-        string mfolder_base = @"D:\stryx_JYA_hdMap_dev\smms_fisheye\mBody_cam_2.bin";
-        public string path_depthMap_gpoint;
-
-        public class_sample_calibration(string filepath)
+        public class_sample_calibration()
         {
             Console.WriteLine("Create xyz2rowcol class");
-            path_depthMap_gpoint = filepath;
         }
 
-        public void OpenBinaryReader()
+        public (struct_IOP_header, struct_EOP_header) OpenBinaryReader(struct_IOP_header IOP_header, struct_EOP_header EOP_header, string mfolder_base, int icam)
         {
             IOP_header.binaryReader = new BinaryReader(File.Open(mfolder_base, FileMode.Open));
             uint N_cam = IOP_header.binaryReader.ReadByte();
-            IOP_header.Nw = IOP_header.binaryReader.ReadDouble();
-            IOP_header.Nh = IOP_header.binaryReader.ReadDouble();
-            IOP_header.pp_x = IOP_header.binaryReader.ReadDouble();
-            IOP_header.pp_y = IOP_header.binaryReader.ReadDouble();
-            IOP_header.f_mm = IOP_header.binaryReader.ReadDouble();
-            IOP_header.Fw = IOP_header.binaryReader.ReadDouble();
-            IOP_header.Fh = IOP_header.binaryReader.ReadDouble();
-            IOP_header.Scale0 = IOP_header.binaryReader.ReadDouble();
-            IOP_header.Scale1 = IOP_header.binaryReader.ReadDouble();
-            IOP_header.f0 = IOP_header.binaryReader.ReadDouble();
-            IOP_header.f1 = IOP_header.binaryReader.ReadDouble();
-            IOP_header.k0 = IOP_header.binaryReader.ReadDouble();
-            IOP_header.k1 = IOP_header.binaryReader.ReadDouble();
-            IOP_header.k2 = IOP_header.binaryReader.ReadDouble();
-            IOP_header.k3 = IOP_header.binaryReader.ReadDouble();
-            IOP_header.k4 = IOP_header.binaryReader.ReadDouble();
-            IOP_header.k_inv0 = IOP_header.binaryReader.ReadDouble();
-            IOP_header.k_inv1 = IOP_header.binaryReader.ReadDouble();
-            IOP_header.k_inv2 = IOP_header.binaryReader.ReadDouble();
-            IOP_header.k_inv3 = IOP_header.binaryReader.ReadDouble();
-            IOP_header.k_inv4 = IOP_header.binaryReader.ReadDouble();
-            IOP_header.rect_scale = IOP_header.binaryReader.ReadDouble();
-            IOP_header.filter_fov = 180;
-            EOP_header.Mvec0 = IOP_header.binaryReader.ReadDouble();
-            EOP_header.Mvec1 = IOP_header.binaryReader.ReadDouble();
-            EOP_header.Mvec2 = IOP_header.binaryReader.ReadDouble();
-            EOP_header.T0 = IOP_header.binaryReader.ReadDouble();
-            EOP_header.T1 = IOP_header.binaryReader.ReadDouble();
-            EOP_header.T2 = IOP_header.binaryReader.ReadDouble();
+            for (int i = 0; i < icam; i++)
+            {
+                IOP_header.Nw = IOP_header.binaryReader.ReadDouble();
+                IOP_header.Nh = IOP_header.binaryReader.ReadDouble();
+                IOP_header.pp_x = IOP_header.binaryReader.ReadDouble();
+                IOP_header.pp_y = IOP_header.binaryReader.ReadDouble();
+                IOP_header.f_mm = IOP_header.binaryReader.ReadDouble();
+                IOP_header.Fw = IOP_header.binaryReader.ReadDouble();
+                IOP_header.Fh = IOP_header.binaryReader.ReadDouble();
+                IOP_header.Scale0 = IOP_header.binaryReader.ReadDouble();
+                IOP_header.Scale1 = IOP_header.binaryReader.ReadDouble();
+                IOP_header.f0 = IOP_header.binaryReader.ReadDouble();
+                IOP_header.f1 = IOP_header.binaryReader.ReadDouble();
+                IOP_header.k0 = IOP_header.binaryReader.ReadDouble();
+                IOP_header.k1 = IOP_header.binaryReader.ReadDouble();
+                IOP_header.k2 = IOP_header.binaryReader.ReadDouble();
+                IOP_header.k3 = IOP_header.binaryReader.ReadDouble();
+                IOP_header.k4 = IOP_header.binaryReader.ReadDouble();
+                IOP_header.k_inv0 = IOP_header.binaryReader.ReadDouble();
+                IOP_header.k_inv1 = IOP_header.binaryReader.ReadDouble();
+                IOP_header.k_inv2 = IOP_header.binaryReader.ReadDouble();
+                IOP_header.k_inv3 = IOP_header.binaryReader.ReadDouble();
+                IOP_header.k_inv4 = IOP_header.binaryReader.ReadDouble();
+                IOP_header.rect_scale = IOP_header.binaryReader.ReadDouble();
+                IOP_header.filter_fov = 180;
+                EOP_header.Mvec0 = IOP_header.binaryReader.ReadDouble();
+                EOP_header.Mvec1 = IOP_header.binaryReader.ReadDouble();
+                EOP_header.Mvec2 = IOP_header.binaryReader.ReadDouble();
+                EOP_header.T0 = IOP_header.binaryReader.ReadDouble();
+                EOP_header.T1 = IOP_header.binaryReader.ReadDouble();
+                EOP_header.T2 = IOP_header.binaryReader.ReadDouble();
 
-            EOP_header.Mat = new double[3, 3];
-            EOP_header.Mat[0, 0] = IOP_header.binaryReader.ReadDouble();
-            EOP_header.Mat[1, 0] = IOP_header.binaryReader.ReadDouble();
-            EOP_header.Mat[2, 0] = IOP_header.binaryReader.ReadDouble();
-            EOP_header.Mat[0, 1] = IOP_header.binaryReader.ReadDouble();
-            EOP_header.Mat[1, 1] = IOP_header.binaryReader.ReadDouble();
-            EOP_header.Mat[2, 1] = IOP_header.binaryReader.ReadDouble();
-            EOP_header.Mat[0, 2] = IOP_header.binaryReader.ReadDouble();
-            EOP_header.Mat[1, 2] = IOP_header.binaryReader.ReadDouble();
-            EOP_header.Mat[2, 2] = IOP_header.binaryReader.ReadDouble();
+                EOP_header.Mat = new double[3, 3];
+                EOP_header.Mat[0, 0] = IOP_header.binaryReader.ReadDouble();
+                EOP_header.Mat[1, 0] = IOP_header.binaryReader.ReadDouble();
+                EOP_header.Mat[2, 0] = IOP_header.binaryReader.ReadDouble();
+                EOP_header.Mat[0, 1] = IOP_header.binaryReader.ReadDouble();
+                EOP_header.Mat[1, 1] = IOP_header.binaryReader.ReadDouble();
+                EOP_header.Mat[2, 1] = IOP_header.binaryReader.ReadDouble();
+                EOP_header.Mat[0, 2] = IOP_header.binaryReader.ReadDouble();
+                EOP_header.Mat[1, 2] = IOP_header.binaryReader.ReadDouble();
+                EOP_header.Mat[2, 2] = IOP_header.binaryReader.ReadDouble();
 
-            Console.WriteLine($"N_cam :{N_cam}");
-            Console.WriteLine($"IOP_header.Nw :{IOP_header.Nw}");
-            Console.WriteLine($"IOP_header.Nh :{IOP_header.Nh }");
-            Console.WriteLine($"IOP_header.pp_x :{IOP_header.pp_x }");
-            Console.WriteLine($"IOP_header.pp_y :{IOP_header.pp_y }");
-            Console.WriteLine($"IOP_header.f_mm :{IOP_header.f_mm}");
-            Console.WriteLine($"IOP_header.Fw :{IOP_header.Fw }");
-            Console.WriteLine($"IOP_header.Fh :{IOP_header.Fh }");
-            Console.WriteLine($"IOP_header.rect_scale :{IOP_header.rect_scale}");
-            Console.WriteLine($"EOP_header.Mvec :{EOP_header.Mvec0}, {EOP_header.Mvec1},{EOP_header.Mvec2}");
-            Console.WriteLine($"EOP_header.T :{EOP_header.T0}, {EOP_header.T1}, {EOP_header.T2}");
-            Console.WriteLine($"\n{EOP_header.Mat[0, 0]} {EOP_header.Mat[0, 1]} {EOP_header.Mat[0, 2]} \n");
-            Console.WriteLine($"{EOP_header.Mat[1, 0]} {EOP_header.Mat[1, 1]} {EOP_header.Mat[1, 2]} \n");
-            Console.WriteLine($"{EOP_header.Mat[2, 0]} {EOP_header.Mat[2, 1]} {EOP_header.Mat[2, 2]} \n");
-
+            }
             IOP_header.binaryReader.Close();
+
+            return (IOP_header, EOP_header);
         }
 
         public double[] Setxyz(double X, double Y, double Z)
@@ -170,7 +166,7 @@ namespace Calibration
 
         public (double[], double[]) SetFromINS(double x_tm, double y_tm, double z_tm, double roll_ins, double pitch_ins, double heading_ins)  //From mark_pos DB
         {
-            double[] INS_xyz= new double[3];
+            double[] INS_xyz = new double[3];
             double[] INS_rph = new double[3];
 
             INS_xyz[0] = x_tm;
@@ -184,29 +180,6 @@ namespace Calibration
             return (INS_xyz, INS_rph);
         }
 
-        public double[] sTranslation()
-        {
-            double[] sT = new double[] {EOP_header.T0, EOP_header.T1, EOP_header.T2};
-            double ;
-        }
-
-        public double[] Mat3d(double w, double p, double k)
-        {
-            double[,] Mw = { { 1, 0, 0 }, { 0, Math.Cos(w), Math.Sin(w)}, { 0, -Math.Sin(w), Math.Cos(w) } };
-            double[,] Mp = { { Math.Cos(p), 0, -Math.Sin(p)}, { 0,1,0}, {Math.Sin(p), 0, Math.Cos(p) } };
-            double[,] Mk = { { Math.Cos(k), Math.Sin(k), 0},{ -Math.Sin(k), Math.Cos(k), 0},{ 0, 0, 1 } };
-
-            double[,] Mwpk = new double[,] { };
-
-            for(int i = 0; i < 3; i++)
-            {
-                for (int j = 0; j < 3; j++)
-                {
-                    Mwpk[i, k] = Mk[i, k] * Mp[k, i];
-                    
-                }
-            }
-        }
     }
 
     public class class_INS_calculation
@@ -249,11 +222,119 @@ namespace Calibration
             double[] mXYZ = new double[3];
             for (int i = 0; i < sPoint.Length; i++)
             {
-                diff_obj2ins = (sPoint[0] - INS_xyz[0]) * INS_mat[i,0] + (sPoint[1] - INS_xyz[1]) * INS_mat[i,1] + (sPoint[2] - INS_xyz[2]) * INS_mat[i,2];
+                diff_obj2ins = (sPoint[0] - INS_xyz[0]) * INS_mat[i, 0] + (sPoint[1] - INS_xyz[1]) * INS_mat[i, 1] + (sPoint[2] - INS_xyz[2]) * INS_mat[i, 2];
                 mXYZ[i] = diff_obj2ins;
             }
 
             return mXYZ;
+        }
+
+
+        public double[,] pixel_obj2cam(double[] sXYZobj, struct_EOP_header EOP_header, int flag_filter)
+        {
+            double[] sT = new double[] { EOP_header.T0, EOP_header.T1, EOP_header.T2 };
+            double[,] sMmat = Mat3d(EOP_header.Mvec0, EOP_header.Mvec1, EOP_header.Mvec2);
+
+            double[,] sXYZobj0 = new double[3, 1];
+            for (int i = 0; i < 3; i++)
+            {
+                sXYZobj0[i, 0] = sXYZobj[i] - sT[i];
+            }
+            double[,] sXYZcam = new double[3, 1];
+            for (int i = 0; i < 3; i++)
+            {
+                sXYZcam[i, 0] = sMmat[i, 0] * sXYZobj0[0, 0] + sMmat[i, 1] * sXYZobj0[1, 0] + sMmat[i, 2] * sXYZobj0[2, 0];
+                Console.WriteLine(sXYZcam[i, 0]);
+            }
+            if (flag_filter == 1)
+            {
+                if (sXYZcam[2, 0] < 0)
+                {
+                    sXYZcam = null;
+                    return sXYZcam;
+                }
+            }
+            else if (flag_filter == 2)
+            {
+                if (sXYZcam[2, 0] < -1)
+                {
+                    sXYZcam = null;
+                    return sXYZcam;
+                }
+            }
+            sXYZcam[0, 0] = -(sXYZcam[0, 0] / sXYZcam[2, 0]);
+            sXYZcam[1, 0] = -(sXYZcam[1, 0] / sXYZcam[2, 0]);
+            sXYZcam[2, 0] = -(sXYZcam[2, 0] / sXYZcam[2, 0]);
+
+            return sXYZcam;
+        }
+
+        public double[,] Mat3d(double w, double p, double k)
+        {
+            double[,] Mwpk = new double[3, 3];
+
+            Mwpk[0, 0] = Math.Cos(k) * Math.Cos(p);
+            Mwpk[0, 1] = Math.Cos(w) * Math.Sin(k) + Math.Sin(w) * Math.Sin(p) * Math.Cos(k);
+            Mwpk[0, 2] = Math.Sin(w) * Math.Sin(k) - Math.Cos(w) * Math.Sin(p) * Math.Cos(k);
+            Mwpk[1, 0] = -Math.Cos(p) * Math.Sin(k);
+            Mwpk[1, 1] = Math.Cos(w) * Math.Cos(k) - Math.Sin(w) * Math.Sin(p) * Math.Sin(k);
+            Mwpk[1, 2] = Math.Sin(w) * Math.Cos(k) + Math.Cos(w) * Math.Sin(p) * Math.Sin(k);
+            Mwpk[2, 0] = Math.Sin(p);
+            Mwpk[2, 1] = -Math.Sin(w) * Math.Cos(p);
+            Mwpk[2, 2] = Math.Cos(w) * Math.Cos(p);
+
+            return Mwpk;
+        }
+
+        public double[,] pixel_cam2img_equidist(double[,] sXYZcam, struct_IOP_header IOP_header, int flag_filter)
+        {
+            if (sXYZcam != null)
+            {
+                double sR = Math.Sqrt(Math.Pow(sXYZcam[0, 0], 2) + Math.Pow(sXYZcam[1, 0], 2));
+                double theta = Math.Atan(sR);
+
+                if (flag_filter == 1)
+                {
+                    int mflag_filter = 170;
+                    if (theta > (Math.PI / 180) * (mflag_filter / 2))
+                        theta = 0;
+                }
+
+                double scaling = theta / sR;
+
+                // Symbolic
+                double[,] sXYimg = new double[2, 1];
+                sXYimg[0, 0] = sXYZcam[0, 0] * scaling;
+                sXYimg[1, 0] = sXYZcam[1, 0] * scaling;
+                // Lens Distortion
+                sR = Math.Sqrt(Math.Pow(sXYimg[0, 0], 2) + Math.Pow(sXYimg[1, 0], 2));
+                double tR2 = sR * sR;
+                double AA = IOP_header.k0 * tR2 + IOP_header.k1 * Math.Pow(tR2, 2) + IOP_header.k2 * Math.Pow(tR2, 3);
+                double tXY = sXYimg[0, 0] * sXYimg[1, 0];
+                double[,] sXYlensDistortion = new double[2, 1];
+                sXYlensDistortion[0, 0] = sXYimg[0, 0] * AA + IOP_header.k3 * (tR2 + 2 * Math.Pow(sXYimg[0, 0], 2)) + 2 * IOP_header.k4 * tXY;
+                sXYlensDistortion[1, 0] = sXYimg[1, 0] * AA + IOP_header.k4 * (tR2 + 2 * Math.Pow(sXYimg[1, 0], 2)) + 2 * IOP_header.k3 * tXY;
+
+                sXYimg[0, 0] = sXYimg[0, 0] + sXYlensDistortion[0, 0];
+                sXYimg[1, 0] = sXYimg[1, 0] + sXYlensDistortion[1, 0];
+                // Scale : convert mm to pixel 
+                sXYimg[0, 0] = sXYimg[0, 0] * (IOP_header.f_mm * IOP_header.Nw / IOP_header.Fw);
+                sXYimg[1, 0] = sXYimg[1, 0] * (IOP_header.f_mm * IOP_header.Nw / IOP_header.Fw);
+
+                // Principal point
+                sXYimg[0, 0] = sXYimg[0, 0] + IOP_header.pp_x;
+                sXYimg[1, 0] = sXYimg[1, 0] + IOP_header.pp_y;
+
+                if (flag_filter == 1)
+                {
+                    if (sXYimg[0, 0] < 2 | sXYimg[1, 0] < 2 | sXYimg[0, 0] > IOP_header.Nw - 2 | sXYimg[1, 0] > IOP_header.Nw - 2)
+                        sXYimg = null;
+                }
+
+                return sXYimg;
+            }
+            else
+                return null;
         }
     }
 }
